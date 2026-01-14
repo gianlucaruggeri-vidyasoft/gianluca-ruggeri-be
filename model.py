@@ -5,7 +5,6 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
 
-# --- ENTITÀ DATABASE ---
 class LibroDB(Base):
     __tablename__ = "libri"
     id = Column(Integer, primary_key=True, index=True)
@@ -32,11 +31,11 @@ class PrenotazioneDB(Base):
     libro = relationship("LibroDB", back_populates="prenotazioni")
     utente = relationship("UtenteDB", back_populates="prenotazioni")
 
-# --- DTO (Pydantic) ---
 class LibroBase(BaseModel):
     titolo: str
     autore: str
     copie_totali: int
+
 class Libro(LibroBase):
     id: int
     class Config: orm_mode = True
@@ -44,6 +43,7 @@ class Libro(LibroBase):
 class UtenteBase(BaseModel):
     nome: str
     email: str
+
 class Utente(UtenteBase):
     id: int
     class Config: orm_mode = True
@@ -51,6 +51,7 @@ class Utente(UtenteBase):
 class PrenotazioneCreate(BaseModel):
     libro_id: int
     utente_id: int
+
 class Prenotazione(BaseModel):
     id: int
     data_inizio: datetime
@@ -59,3 +60,7 @@ class Prenotazione(BaseModel):
     libro_id: int
     utente_id: int
     class Config: orm_mode = True
+
+class PrenotazioneUpdate(BaseModel):
+    data_fine: Optional[datetime] = None
+    attiva: Optional[bool] = None

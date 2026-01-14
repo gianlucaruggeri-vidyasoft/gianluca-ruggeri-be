@@ -2,10 +2,8 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 import database
-from model import Libro, LibroBase, Utente, UtenteBase, Prenotazione, PrenotazioneCreate
+from model import Libro, LibroBase, Utente, UtenteBase, Prenotazione, PrenotazioneCreate, PrenotazioneUpdate
 from repository import LibroRepository, UtenteRepository, PrenotazioneRepository
-
-
 
 database.init_db()
 app = FastAPI(title="Gestione Biblioteca")
@@ -19,7 +17,6 @@ repo_libri = LibroRepository()
 repo_utenti = UtenteRepository()
 repo_prenotazioni = PrenotazioneRepository()
 
-#endpoint libri
 @app.post("/libri/", response_model=Libro, tags=["Libri"])
 def crea_libro(libro: LibroBase, db: Session = Depends(get_db)):
     return repo_libri.crea(db, libro)
@@ -28,8 +25,6 @@ def crea_libro(libro: LibroBase, db: Session = Depends(get_db)):
 def leggi_libri(db: Session = Depends(get_db)):
     return repo_libri.leggi_tutti(db)
 
-
-#endpoint utenti
 @app.post("/utenti/", response_model=Utente, tags=["Utenti"])
 def crea_utente(utente: UtenteBase, db: Session = Depends(get_db)):
     return repo_utenti.crea(db, utente)
@@ -38,8 +33,6 @@ def crea_utente(utente: UtenteBase, db: Session = Depends(get_db)):
 def leggi_utenti(db: Session = Depends(get_db)):
     return repo_utenti.leggi_tutti(db)
 
-
-#endpoint prenotazioni
 @app.post("/prenotazioni/", response_model=Prenotazione, tags=["Prenotazioni"])
 def crea_prenotazione(pren: PrenotazioneCreate, db: Session = Depends(get_db)):
     if not repo_libri.leggi_uno(db, pren.libro_id): raise HTTPException(404, "Libro non trovato")
@@ -52,3 +45,8 @@ def termina_prenotazione(id: int, db: Session = Depends(get_db)):
     if not res: raise HTTPException(404, "Prenotazione non trovata")
     return res
 
+@app.patch("/prenotazioni/{id}", response_model=Prenotazione, tags=["Prenotazioni"])
+def aggiorna_prenotazione(id: int, payload: PrenotazioneUpdate, db: Session = Depends(get_db)):
+    res = repo_prenotazioni.aggiorna(db, id, payload)
+    if not res: raise HTTPException(404, "Prenotazione non trovata")
+    return res
