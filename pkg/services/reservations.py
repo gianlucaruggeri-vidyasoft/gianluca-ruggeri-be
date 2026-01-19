@@ -7,10 +7,7 @@ from pkg.schemas.prenotazione import PrenotazioneCreate, PrenotazioneUpdate
 
 
 class PrenotazioneService:
-    """
-    Incapsula la logica di business delle prenotazioni, lasciando ai router
-    la sola responsabilità di gestire HTTP e serializzazione.
-    """
+  
 
     def __init__(
         self,
